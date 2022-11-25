@@ -6,13 +6,37 @@ import { makeStyles } from "@mui/styles"
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    fontFamily: '"Inter", sans-serif',
+    fontFamily: [
+      "Quicksand",
+      "-apple-system",
+      "BlinkMacSystemFont",
+      '"Segoe UI"',
+      "Roboto",
+      '"Helvetica Neue"',
+      "Arial",
+      "sans-serif",
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(","),
   },
 }))
 
 const theme = createTheme({
   typography: {
-    fontFamily: '"Inter", "Roboto", sans-serif',
+    fontFamily: [
+      "Quicksand",
+      "-apple-system",
+      "BlinkMacSystemFont",
+      '"Segoe UI"',
+      "Roboto",
+      '"Helvetica Neue"',
+      "Arial",
+      "sans-serif",
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(","),
   },
   overrides: {
     MuiButton: {

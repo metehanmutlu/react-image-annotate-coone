@@ -28,7 +28,7 @@ export const TaskDescriptionSidebarBox = ({ description }) => {
   return (
     <ThemeProvider theme={theme}>
       <SidebarBoxContainer
-        title="Task Description"
+        title="Comments"
         icon={<DescriptionIcon style={{ color: grey[700] }} />}
         expandedByDefault={description && description !== "" ? false : true}
       >
