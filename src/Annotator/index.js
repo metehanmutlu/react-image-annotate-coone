@@ -185,6 +185,7 @@ export const Annotator = ({
     <SettingsProvider>
       <MainLayout
         RegionEditLabel={RegionEditLabel}
+        dispatchToReducer={dispatchToReducer}
         alwaysShowNextButton={Boolean(onNextImage)}
         alwaysShowPrevButton={Boolean(onPrevImage)}
         state={state}

@@ -67,6 +67,7 @@ type Props = {
 export const MainLayout = ({
   state,
   dispatch,
+  dispatchToReducer,
   alwaysShowNextButton = false,
   alwaysShowPrevButton = false,
   RegionEditLabel,
@@ -353,7 +354,11 @@ export const MainLayout = ({
                   <DebugBox state={debugModeOn} lastAction={state.lastAction} />
                 ),
                 state.taskDescription && (
-                  <TaskDescription description={state.taskDescription} />
+                  <TaskDescription
+                    description={state.taskDescription}
+                    state={state}
+                    dispatch={dispatchToReducer}
+                  />
                 ),
                 state.regionClsList && (
                   <ClassSelectionMenu

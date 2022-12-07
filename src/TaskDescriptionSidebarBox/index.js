@@ -9,6 +9,9 @@ import { grey } from "@mui/material/colors"
 import Markdown from "react-markdown"
 import { Box, Typography } from "@mui/material"
 import CircleIcon from "@mui/icons-material/Circle"
+import dispatch from "../Annotator/reducers/general-reducer"
+import { useEffect } from "react"
+import { useState } from "react"
 
 const theme = createTheme()
 const MarkdownContainer = styled("div")(({ theme }) => ({
@@ -26,79 +29,53 @@ const MarkdownContainer = styled("div")(({ theme }) => ({
   "& img": { width: "100%" },
 }))
 
-export const TaskDescriptionSidebarBox = ({ description }) => {
+export const TaskDescriptionSidebarBox = ({ description, state, dispatch }) => {
+  const selectedImage = state.images[state.selectedImage]
+
   return (
     <ThemeProvider theme={theme}>
       <SidebarBoxContainer
         title="Comments"
         icon={<DescriptionIcon style={{ color: grey[700] }} />}
-        expandedByDefault={description && description !== "" ? false : true}
+        // expandedByDefault={description && description !== "" ? false : true}
       >
         <MarkdownContainer>
-          {/* <Markdown source={description} /> */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              p: "5px",
-              cursor: "pointer",
-              "&:hover": {
-                bgcolor: "#e3f2fd",
-                color: "#424242",
-              },
-            }}
-          >
-            <CircleIcon
-              sx={{
-                color: "blueviolet",
-              }}
-              fontSize="small"
-            />
-            <Typography>This is comment 1</Typography>
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              p: "5px",
-              cursor: "pointer",
-              "&:hover": {
-                bgcolor: "#e3f2fd",
-                color: "#424242",
-              },
-            }}
-          >
-            <CircleIcon
-              sx={{
-                color: "blueviolet",
-              }}
-              fontSize="small"
-            />
-            <Typography>This is comment 1</Typography>
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              p: "5px",
-              cursor: "pointer",
-              "&:hover": {
-                bgcolor: "#e3f2fd",
-                color: "#424242",
-              },
-            }}
-          >
-            <CircleIcon
-              sx={{
-                color: "blueviolet",
-              }}
-              fontSize="small"
-            />
-            <Typography>This is comment 1</Typography>
-          </Box>
+          {selectedImage?.regions?.map(
+            (region) =>
+              region.comment && (
+                <Box
+                  key={region.id}
+                  onClick={() => {
+                    const regionIndex = selectedImage.regions.findIndex(
+                      (r) => r.id === region.id
+                    )
+                    dispatch({
+                      type: "SELECT_REGION",
+                      region: selectedImage.regions[regionIndex],
+                    })
+                  }}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    p: "5px",
+                    cursor: "pointer",
+                    "&:hover": {
+                      bgcolor: "#e3f2fd",
+                      color: "#424242",
+                    },
+                  }}
+                >
+                  <CircleIcon
+                    sx={{
+                      color: region.color,
+                    }}
+                    fontSize="small"
+                  />
+                  <Typography>{region.comment}</Typography>
+                </Box>
+              )
+          )}
         </MarkdownContainer>
       </SidebarBoxContainer>
     </ThemeProvider>

@@ -164,11 +164,14 @@ export default (state: MainLayoutState, action: Action) => {
       const { region } = action
       const regionIndex = getRegionIndex(action.region)
       if (regionIndex === null) return state
-      const regions = [...(activeImage.regions || [])].map((r) => ({
-        ...r,
-        highlighted: r.id === region.id,
-        editingLabels: r.id === region.id,
-      }))
+      console.log(region, regionIndex)
+      const regions = [...(activeImage.regions || [])].map((r) => {
+        return {
+          ...r,
+          highlighted: r.id === region.id,
+          editingLabels: r.id === region.id,
+        }
+      })
       return setIn(state, [...pathToActiveImage, "regions"], regions)
     }
     case "BEGIN_MOVE_POINT": {
