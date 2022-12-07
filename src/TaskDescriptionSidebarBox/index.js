@@ -49,6 +49,7 @@ export const TaskDescriptionSidebarBox = ({ description, state, dispatch }) => {
                     const regionIndex = selectedImage.regions.findIndex(
                       (r) => r.id === region.id
                     )
+                    console.log(region)
                     dispatch({
                       type: "SELECT_REGION",
                       region: selectedImage.regions[regionIndex],
@@ -64,6 +65,10 @@ export const TaskDescriptionSidebarBox = ({ description, state, dispatch }) => {
                       bgcolor: "#e3f2fd",
                       color: "#424242",
                     },
+                    bgcolor:
+                      region.editingLabels && region.highlighted
+                        ? "#BBDEFB"
+                        : "transparent",
                   }}
                 >
                   <CircleIcon
