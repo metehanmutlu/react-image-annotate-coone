@@ -31,7 +31,7 @@ const MarkdownContainer = styled("div")(({ theme }) => ({
 
 export const TaskDescriptionSidebarBox = ({ description, state, dispatch }) => {
   const selectedImage = state.images[state.selectedImage]
-
+// console.log(state);
   return (
     <ThemeProvider theme={theme}>
       <SidebarBoxContainer

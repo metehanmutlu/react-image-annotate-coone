@@ -65,26 +65,38 @@ export const RegionLabel = ({
         })}
       >
         {!editing ? (
-          <div>
-            {region.cls && (
-              <div className="name">
-                <div
-                  className="circle"
-                  style={{ backgroundColor: region.color }}
-                />
-                {region.cls}
-              </div>
-            )}
-            {region.tags && (
-              <div className="tags">
-                {region.tags.map((t) => (
-                  <div key={t} className="tag">
-                    {t}
+          <>
+            {region.cls ? (
+              <div>
+                {region.cls && (
+                  <div className="name" style={{fontFamily: 'Quicksand'}}>
+                    <div
+                      className="circle"
+                      style={{ backgroundColor: region.color }}
+                    />
+                    {region.cls}
                   </div>
-                ))}
+                )}
+                {region.tags && (
+                  <div className="tags">
+                    {region.tags.map((t) => (
+                      <div key={t} className="tag">
+                        {t}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div
+                style={{
+                  fontFamily: "Quicksand",
+                }}
+              >
+                Select Class
               </div>
             )}
-          </div>
+          </>
         ) : (
           <div style={{ width: 200 }}>
             <div style={{ display: "flex", flexDirection: "row" }}>
@@ -127,9 +139,7 @@ export const RegionLabel = ({
                       cls: o.value,
                     })
                   }}
-                  value={
-                    region.cls ? { label: region.cls, value: region.cls } : null
-                  }
+                  value={{ label: allowedClasses[0], value: allowedClasses[0] }}
                   options={asMutable(
                     allowedClasses.map((c) => ({ value: c, label: c }))
                   )}
@@ -177,7 +187,13 @@ export const RegionLabel = ({
               <div style={{ marginTop: 4, display: "flex" }}>
                 <div style={{ flexGrow: 1 }} />
                 <Button
-                  onClick={() => onClose(region)}
+                  onClick={() => {
+                    onChange({
+                      ...(region: any),
+                      cls: allowedClasses[0],
+                    })
+                    onClose(region)
+                  }}
                   size="small"
                   variant="contained"
                   color="primary"

@@ -207,6 +207,7 @@ export default (state: MainLayoutState, action: Action) => {
           modifyRegion(polygon, {
             points: polygon.points.slice(0, -1),
             open: false,
+            editingLabels: true,
           }),
           ["mode"],
           null

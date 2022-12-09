@@ -406,6 +406,7 @@ export const ImageCanvas = ({
               onDelete={onDeleteRegion}
               editing
               region={highlightedRegion}
+              regionClsList={regionClsList}
               imageSrc={imageSrc}
               allowComments={allowComments}
             />
