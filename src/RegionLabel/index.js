@@ -69,7 +69,7 @@ export const RegionLabel = ({
             {region.cls ? (
               <div>
                 {region.cls && (
-                  <div className="name" style={{fontFamily: 'Quicksand'}}>
+                  <div className="name" style={{ fontFamily: "Quicksand" }}>
                     <div
                       className="circle"
                       style={{ backgroundColor: region.color }}
