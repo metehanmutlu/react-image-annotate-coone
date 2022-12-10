@@ -139,7 +139,11 @@ export const RegionLabel = ({
                       cls: o.value,
                     })
                   }}
-                  value={{ label: allowedClasses[0], value: allowedClasses[0] }}
+                  value={
+                    region.cls
+                      ? { label: region.cls, value: region.cls }
+                      : { label: allowedClasses[0], value: allowedClasses[0] }
+                  }
                   options={asMutable(
                     allowedClasses.map((c) => ({ value: c, label: c }))
                   )}
@@ -190,7 +194,7 @@ export const RegionLabel = ({
                   onClick={() => {
                     onChange({
                       ...(region: any),
-                      cls: allowedClasses[0],
+                      cls: region.cls ? region.cls : allowedClasses[0],
                     })
                     onClose(region)
                   }}
