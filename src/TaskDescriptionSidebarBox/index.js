@@ -10,6 +10,7 @@ import { Box, Typography } from "@mui/material"
 import CircleIcon from "@mui/icons-material/Circle"
 import { useEffect, useState } from "react"
 import NoDescriptionInfo from "../NoDescriptionInfo"
+import TrashIcon from "@mui/icons-material/Delete"
 
 const theme = createTheme()
 const MarkdownContainer = styled("div")(({ theme }) => ({
@@ -102,6 +103,25 @@ export const TaskDescriptionSidebarBox = ({ description, state, dispatch }) => {
                     fontSize="small"
                   />
                   <Typography>{region.comment}</Typography>
+                  <TrashIcon
+                    fontSize="small"
+                    onClick={() => {
+                      const regionIndex = selectedImage.regions.findIndex(
+                        (r) => r.id === region.id
+                      )
+                      const newRegion = {
+                        ...selectedImage.regions[regionIndex],
+                        comment: "",
+                      }
+                      dispatch({
+                        type: "CHANGE_REGION",
+                        region: newRegion,
+                      })
+                    }}
+                    sx={{
+                      ml: "auto",
+                    }}
+                  />
                 </Box>
               )
           )}
