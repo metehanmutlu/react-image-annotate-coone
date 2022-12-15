@@ -6,12 +6,10 @@ import DescriptionIcon from "@mui/icons-material/Description"
 import { styled } from "@mui/material/styles"
 import { createTheme, ThemeProvider } from "@mui/material/styles"
 import { grey } from "@mui/material/colors"
-import Markdown from "react-markdown"
 import { Box, Typography } from "@mui/material"
 import CircleIcon from "@mui/icons-material/Circle"
-import dispatch from "../Annotator/reducers/general-reducer"
-import { useEffect } from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import NoDescriptionInfo from "../NoDescriptionInfo"
 
 const theme = createTheme()
 const MarkdownContainer = styled("div")(({ theme }) => ({
@@ -31,11 +29,38 @@ const MarkdownContainer = styled("div")(({ theme }) => ({
 
 export const TaskDescriptionSidebarBox = ({ description, state, dispatch }) => {
   const selectedImage = state.images[state.selectedImage]
-// console.log(state);
+  const [hasDescription, setHasDescription] = useState(null)
+
+  useEffect(() => {
+    if (selectedImage.regions?.length) {
+      const anyDescription = selectedImage?.regions?.filter((region) => {
+        if (!region.comment) {
+          return region
+        }
+      })
+      // console.log(anyDescription.length)
+      setHasDescription(anyDescription?.length)
+    } else {
+      setHasDescription(null)
+    }
+  }, [selectedImage])
+
+  useEffect(() => {
+    // console.log(hasDescription)
+  }, [hasDescription])
+
   return (
     <ThemeProvider theme={theme}>
       <SidebarBoxContainer
-        title="Comments"
+        info={
+          hasDescription > 0 ? (
+            <NoDescriptionInfo
+              selectedImage={selectedImage}
+              dispatch={dispatch}
+            />
+          ) : null
+        }
+        title="Descriptions"
         icon={<DescriptionIcon style={{ color: grey[700] }} />}
         // expandedByDefault={description && description !== "" ? false : true}
       >
@@ -49,7 +74,6 @@ export const TaskDescriptionSidebarBox = ({ description, state, dispatch }) => {
                     const regionIndex = selectedImage.regions.findIndex(
                       (r) => r.id === region.id
                     )
-                    console.log(region)
                     dispatch({
                       type: "SELECT_REGION",
                       region: selectedImage.regions[regionIndex],

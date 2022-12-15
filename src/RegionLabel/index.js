@@ -131,7 +131,7 @@ export const RegionLabel = ({
                 <CreatableSelect
                   placeholder="Classification"
                   onChange={(o, actionMeta) => {
-                    if (actionMeta.action == "create-option") {
+                    if (actionMeta.action === "create-option") {
                       onRegionClassAdded(o.value)
                     }
                     return onChange({
@@ -185,6 +185,7 @@ export const RegionLabel = ({
                 onChange={(event) =>
                   onChange({ ...(region: any), comment: event.target.value })
                 }
+                placeholder={"Description..."}
               />
             )}
             {onClose && (

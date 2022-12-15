@@ -164,7 +164,6 @@ export default (state: MainLayoutState, action: Action) => {
       const { region } = action
       const regionIndex = getRegionIndex(action.region)
       if (regionIndex === null) return state
-      console.log(region, regionIndex)
       const regions = [...(activeImage.regions || [])].map((r) => {
         return {
           ...r,

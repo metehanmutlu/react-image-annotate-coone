@@ -59,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export const SidebarBoxContainer = ({
+  info,
   icon,
   title,
   subTitle,
@@ -80,7 +81,7 @@ export const SidebarBoxContainer = ({
 
   return (
     <ThemeProvider theme={theme}>
-      <SidebarBox icon={icon} title={title}>
+      <SidebarBox icon={icon} title={title} subTitle={info}>
         {children}
       </SidebarBox>
     </ThemeProvider>
