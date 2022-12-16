@@ -58,21 +58,21 @@ export const ClassSelectionMenu = ({
   regionClsList,
   onSelectCls,
 }) => {
-  useEffect(() => {
-    const keyMapping = {}
-    for (let i = 0; i < 9 && i < regionClsList.length; i++) {
-      keyMapping[i + 1] = () => onSelectCls(regionClsList[i])
-    }
-    const onKeyDown = (e) => {
-      if (keyMapping[e.key]) {
-        keyMapping[e.key]()
-        e.preventDefault()
-        e.stopPropagation()
-      }
-    }
-    window.addEventListener("keydown", onKeyDown)
-    return () => window.removeEventListener("keydown", onKeyDown)
-  }, [regionClsList, selectedCls])
+  // useEffect(() => {
+  //   const keyMapping = {}
+  //   for (let i = 0; i < 9 && i < regionClsList.length; i++) {
+  //     keyMapping[i + 1] = () => onSelectCls(regionClsList[i])
+  //   }
+  //   const onKeyDown = (e) => {
+  //     if (keyMapping[e.key]) {
+  //       keyMapping[e.key]()
+  //       e.preventDefault()
+  //       e.stopPropagation()
+  //     }
+  //   }
+  //   window.addEventListener("keydown", onKeyDown)
+  //   return () => window.removeEventListener("keydown", onKeyDown)
+  // }, [regionClsList, selectedCls])
 
   return (
     <ThemeProvider theme={theme}>
