@@ -94,6 +94,8 @@ export const TaskDescriptionSidebarBox = ({ description, state, dispatch }) => {
                       region.editingLabels && region.highlighted
                         ? "#BBDEFB"
                         : "transparent",
+                    overflow: "hidden",
+                    position: "relative",
                   }}
                 >
                   <CircleIcon
@@ -120,6 +122,8 @@ export const TaskDescriptionSidebarBox = ({ description, state, dispatch }) => {
                     }}
                     sx={{
                       ml: "auto",
+                      position: "absolute",
+                      right: "6px",
                     }}
                   />
                 </Box>
