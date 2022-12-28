@@ -63,7 +63,7 @@ export const TaskDescriptionSidebarBox = ({ description, state, dispatch }) => {
         }
         title="Descriptions"
         icon={<DescriptionIcon style={{ color: grey[700] }} />}
-        // expandedByDefault={description && description !== "" ? false : true}
+        expandedByDefault={true}
       >
         <MarkdownContainer>
           {selectedImage?.regions?.map(

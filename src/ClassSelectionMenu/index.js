@@ -80,7 +80,7 @@ export const ClassSelectionMenu = ({
         title="Classifications"
         subTitle=""
         icon={<BallotIcon style={{ color: muiColors.grey[700] }} />}
-        expandedByDefault
+        // expandedByDefault
       >
         {regionClsList.map((label, index) => (
           <LabelContainer

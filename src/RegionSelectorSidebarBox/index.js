@@ -178,7 +178,7 @@ export const RegionSelectorSidebarBox = ({
         title="Regions"
         subTitle=""
         icon={<RegionIcon style={{ color: grey[700] }} />}
-        expandedByDefault
+        // expandedByDefault
       >
         <div className={classes.container}>
           <MemoRowHeader />
