@@ -15,6 +15,7 @@ import moment from "moment"
 import { grey } from "@mui/material/colors"
 import isEqual from "lodash/isEqual"
 import Box from "@mui/material/Box"
+import SidebarBox from "../SidebarBox"
 
 const theme = createTheme()
 const useStyles = makeStyles((theme) => ({
@@ -27,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const listItemTextStyle = { paddingLeft: 16 }
+const listItemTextStyle = { paddingLeft: 16, fontSize: "14px" }
 
 export const HistorySidebarBox = ({
   history,
@@ -39,10 +40,10 @@ export const HistorySidebarBox = ({
 
   return (
     <ThemeProvider theme={theme}>
-      <SidebarBoxContainer
+      <SidebarBox
         title="History"
         icon={<HistoryIcon style={{ color: grey[700] }} />}
-        expandedByDefault
+        expandedByDefault={true}
       >
         <List>
           {history.length === 0 && (
@@ -53,6 +54,7 @@ export const HistorySidebarBox = ({
               <ListItemText
                 style={listItemTextStyle}
                 primary={name}
+                secondaryTypographyProps={{ style: { fontSize: "12px" } }}
                 secondary={moment(time).format("LT")}
               />
               {i === 0 && (
@@ -65,7 +67,7 @@ export const HistorySidebarBox = ({
             </ListItem>
           ))}
         </List>
-      </SidebarBoxContainer>
+      </SidebarBox>
     </ThemeProvider>
   )
 }

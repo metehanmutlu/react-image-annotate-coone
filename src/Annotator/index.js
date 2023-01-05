@@ -9,6 +9,7 @@ import type {
 } from "../MainLayout/types"
 import React, { useEffect, useReducer } from "react"
 import makeImmutable, { without } from "seamless-immutable"
+import { FullScreen, useFullScreenHandle } from "react-full-screen"
 
 import type { KeypointsDefinition } from "../ImageCanvas/region-tools"
 import MainLayout from "../MainLayout"
@@ -21,6 +22,7 @@ import historyHandler from "./reducers/history-handler.js"
 import imageReducer from "./reducers/image-reducer.js"
 import useEventCallback from "use-event-callback"
 import videoReducer from "./reducers/video-reducer.js"
+import { Box } from "@mui/material"
 
 type Props = {
   taskDescription?: string,
@@ -38,6 +40,7 @@ type Props = {
   pointDistancePrecision?: number,
   RegionEditLabel?: Node,
   onExit: (MainLayoutState) => any,
+  onUploadImage: () => any,
   videoTime?: number,
   videoSrc?: string,
   keyframes?: Object,
@@ -86,6 +89,7 @@ export const Annotator = ({
   videoTime = 0,
   videoName,
   onExit,
+  onUploadImage,
   onNextImage,
   onPrevImage,
   keypointDefinitions,
@@ -100,6 +104,8 @@ export const Annotator = ({
   hideSave,
   allowComments,
 }: Props) => {
+  const fullScreenHandle = useFullScreenHandle()
+
   if (typeof selectedImage === "string") {
     selectedImage = (images || []).findIndex((img) => img.src === selectedImage)
     if (selectedImage === -1) selectedImage = undefined
@@ -169,37 +175,82 @@ export const Annotator = ({
     })
   })
 
-  useEffect(() => {
-    if (selectedImage === undefined) return
-    dispatchToReducer({
-      type: "SELECT_IMAGE",
-      imageIndex: selectedImage,
-      image: state.images[selectedImage],
-    })
-  }, [selectedImage, state.images])
+  // useEffect(() => {
+  //   if (selectedImage === undefined) return
+  //   dispatchToReducer({
+  //     type: "SELECT_IMAGE",
+  //     imageIndex: selectedImage,
+  //     image: state.images[selectedImage],
+  //   })
+  //   console.log(selectedImage)
+  // }, [selectedImage, state.images])
 
-  if (!images && !videoSrc)
+  if (!images && !videoSrc) {
     return 'Missing required prop "images" or "videoSrc"'
+  }
 
   return (
     <SettingsProvider>
-      <MainLayout
-        RegionEditLabel={RegionEditLabel}
-        dispatchToReducer={dispatchToReducer}
-        alwaysShowNextButton={Boolean(onNextImage)}
-        alwaysShowPrevButton={Boolean(onPrevImage)}
-        state={state}
-        dispatch={dispatch}
-        onRegionClassAdded={onRegionClassAdded}
-        hideHeader={hideHeader}
-        hideHeaderText={hideHeaderText}
-        hideNext={hideNext}
-        hidePrev={hidePrev}
-        hideClone={hideClone}
-        hideSettings={hideSettings}
-        hideFullScreen={hideFullScreen}
-        hideSave={hideSave}
-      />
+      <Box
+        sx={{
+          width: "100%",
+          height: "100%",
+          "& .fullscreen": {
+            width: "100%",
+            height: "100%",
+          },
+          "& .fullscreen::backdrop": {
+            background: "white !important",
+          },
+          "& -webkit-full-screen::backdrop": {
+            background: "white !important",
+          },
+          ":-webkit-full-screen::backdrop": {
+            background: "white !important",
+          },
+        }}
+      >
+        <FullScreen
+          handle={fullScreenHandle}
+          onChange={(open) => {
+            if (!open) {
+              fullScreenHandle.exit()
+              dispatch({
+                type: "HEADER_BUTTON_CLICKED",
+                buttonName: "window",
+              })
+            }
+          }}
+        >
+          <Box
+            sx={{
+              border: "2px solid #a8a8a8",
+              borderRadius: "4px",
+            }}
+          >
+            <MainLayout
+              fullScreenHandle={fullScreenHandle}
+              RegionEditLabel={RegionEditLabel}
+              dispatchToReducer={dispatchToReducer}
+              alwaysShowNextButton={Boolean(onNextImage)}
+              alwaysShowPrevButton={Boolean(onPrevImage)}
+              state={state}
+              dispatch={dispatch}
+              onRegionClassAdded={onRegionClassAdded}
+              hideHeader={hideHeader}
+              hideHeaderText={hideHeaderText}
+              hideNext={hideNext}
+              hidePrev={hidePrev}
+              hideClone={hideClone}
+              hideSettings={hideSettings}
+              hideFullScreen={hideFullScreen}
+              hideSave={hideSave}
+              onExit={onExit}
+              onUploadImage={onUploadImage}
+            />
+          </Box>
+        </FullScreen>
+      </Box>
     </SettingsProvider>
   )
 }

@@ -20,6 +20,11 @@ export default {
         opacity: 1,
       },
     },
+    "& .icon3": {
+      width: 16,
+      height: 16,
+      color: "orange",
+    },
   },
   row: {
     padding: 4,

@@ -15015,10 +15015,10 @@ react-focus-lock@^2.1.0:
     use-callback-ref "^1.2.1"
     use-sidecar "^1.0.1"
 
-react-full-screen@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/react-full-screen/-/react-full-screen-0.3.1.tgz#60bf7b1ab140348bcfee4f5c98e927b6a0766809"
-  integrity sha512-lguQkP+vqwyZGHsLXvM90d8Aktp4gTlPUzszYKuQ9YvxNXIXtu+BILdwr/T+j6P2jREvEppgV20UEauv/0WLDg==
+react-full-screen@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/react-full-screen/-/react-full-screen-1.1.1.tgz#b707d56891015a71c503a65dbab3086d75be97d7"
+  integrity sha512-xoEgkoTiN0dw9cjYYGViiMCBYbkS97BYb4bHPhQVWXj1UnOs8PZ1rPzpX+2HMhuvQV1jA5AF9GaRbO3fA5aZtg==
   dependencies:
     fscreen "^1.0.2"
 

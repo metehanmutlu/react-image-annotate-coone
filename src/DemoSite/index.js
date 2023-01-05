@@ -4,6 +4,7 @@ import ReactDOM from "react-dom"
 import Editor, { examples } from "./Editor"
 import Annotator from "../Annotator"
 import ErrorBoundaryDialog from "./ErrorBoundaryDialog.js"
+import { Box } from "@mui/material"
 
 export default () => {
   const [annotatorOpen, changeAnnotatorOpen] = useState(false)
@@ -18,14 +19,20 @@ export default () => {
             changeAnnotatorOpen(false)
           }}
         >
-          <Annotator
-            {...(annotatorProps: any)}
-            onExit={(output) => {
-              delete (output: any)["lastAction"]
-              changeLastOutput(output)
-              changeAnnotatorOpen(false)
-            }}
-          />
+          <Box sx={{ m: "30px" }}>
+            <Annotator
+              {...(annotatorProps: any)}
+              onExit={(output) => {
+                console.log(output)
+                // delete (output: any)["lastAction"]
+                // changeLastOutput(output)
+                // changeAnnotatorOpen(false)
+              }}
+              onUploadImage={() => {
+                console.log("Image Upload Clicked")
+              }}
+            />
+          </Box>
         </ErrorBoundaryDialog>
       ) : (
         <Editor

@@ -665,6 +665,7 @@ export default (state: MainLayoutState, action: Action) => {
           break
       }
 
+      if (newRegion) newRegion.showComment = false
       const regions = [...(getIn(state, pathToActiveImage).regions || [])]
         .map((r) =>
           setIn(r, ["editingLabels"], false).setIn(["highlighted"], false)

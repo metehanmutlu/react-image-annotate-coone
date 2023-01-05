@@ -18,6 +18,20 @@ import VisibleOffIcon from "@mui/icons-material/VisibilityOff"
 import styles from "./styles"
 import classnames from "classnames"
 import isEqual from "lodash/isEqual"
+import LabelFilterMenu from "../LabelFilterMenu"
+import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp"
+import LabelIcon from "@mui/icons-material/Label"
+import CommentIcon from "@mui/icons-material/Comment"
+import DisabledCommentIcon from "@mui/icons-material/CommentsDisabled"
+import MuiAccordion from "@mui/material/Accordion"
+import MuiAccordionSummary from "@mui/material/AccordionSummary"
+import MuiAccordionDetails from "@mui/material/AccordionDetails"
+import { colors } from "../colors"
+import { useEffect } from "react"
+import SidebarBox from "../SidebarBox"
+import { Autocomplete, Box, TextField, Tooltip } from "@mui/material"
+import Select from "react-select"
+import { asMutable } from "seamless-immutable"
 
 const theme = createTheme()
 const useStyles = makeStyles((theme) => styles)
@@ -47,11 +61,18 @@ const RowLayout = ({
   tags,
   trash,
   lock,
+  comment,
   visible,
   onClick,
+  regionClsList,
+  cls,
+  onChangeRegion,
+  region,
+  allowComments,
 }) => {
   const classes = useStyles()
   const [mouseOver, changeMouseOver] = useState(false)
+  // console.log(region)
   return (
     <div
       onClick={onClick}
@@ -65,6 +86,20 @@ const RowLayout = ({
         </Grid>
         <Grid item xs={5}>
           {classification}
+          {/* <Select
+            placeholder="Select"
+            onChange={(e, actionMeta) => {
+              onChangeRegion({ ...region, cls: e.value })
+            }}
+            value={{ label: cls, value: cls }}
+            options={asMutable(
+              regionClsList.map((cls) => ({
+                value: cls,
+                label: cls,
+              }))
+            )}
+            maxMenuHeight={150}
+          /> */}
         </Grid>
         <Grid item xs={2}>
           <div style={{ textAlign: "right", paddingRight: 6 }}>{area}</div>
@@ -72,13 +107,34 @@ const RowLayout = ({
         <Grid item xs={1}>
           {trash}
         </Grid>
-        <Grid item xs={1}>
-          {lock}
-        </Grid>
+        {allowComments ? (
+          <Grid item xs={1}>
+            {comment}
+          </Grid>
+        ) : (
+          <Grid item xs={1}>
+            {lock}
+          </Grid>
+        )}
         <Grid item xs={1}>
           {visible}
         </Grid>
       </Grid>
+      {region.showComment && (
+        <Box
+          sx={{
+            display: "flex",
+            border: "1px solid #a8a8a8",
+            borderRadius: "2px",
+            maxHeight: "3rem",
+            overflow: "hidden",
+            m: "6px",
+            p: "6px",
+          }}
+        >
+          {region.comment}
+        </Box>
+      )}
     </div>
   )
 }
@@ -94,6 +150,7 @@ const RowHeader = () => {
       trash={<TrashIcon className="icon" />}
       lock={<LockIcon className="icon" />}
       visible={<VisibleIcon className="icon" />}
+      comment={<CommentIcon className="icon" />}
     />
   )
 }
@@ -110,10 +167,21 @@ const Row = ({
   locked,
   color,
   cls,
+  showComment,
   index,
+  regionClsList,
+  comment,
+  allowComments,
 }) => {
+  // console.log(r)
+
   return (
     <RowLayout
+      allowComments={allowComments}
+      region={r}
+      onChangeRegion={onChangeRegion}
+      cls={cls}
+      regionClsList={regionClsList}
       header={false}
       highlighted={highlighted}
       onClick={() => onSelectRegion(r)}
@@ -121,6 +189,34 @@ const Row = ({
       classification={<Chip text={cls || ""} color={color || "#ddd"} />}
       area=""
       trash={<TrashIcon onClick={() => onDeleteRegion(r)} className="icon2" />}
+      comment={
+        r.comment ? (
+          r.showComment ? (
+            <DisabledCommentIcon
+              onClick={() => onChangeRegion({ ...r, showComment: false })}
+              className="icon2"
+            />
+          ) : (
+            <CommentIcon
+              onClick={() => onChangeRegion({ ...r, showComment: true })}
+              className="icon2"
+            />
+          )
+        ) : (
+          <Tooltip title="You can improve the process by adding descriptions to your annotations">
+            <CommentIcon
+              onClick={() => {
+                setTimeout(() => {
+                  document
+                    .querySelector('textarea[placeholder="Description..."]')
+                    .focus()
+                }, 200)
+              }}
+              className="icon3"
+            />
+          </Tooltip>
+        )
+      }
       lock={
         r.locked ? (
           <LockIcon
@@ -160,45 +256,199 @@ const MemoRow = memo(
     prevProps.id === nextProps.id &&
     prevProps.index === nextProps.index &&
     prevProps.cls === nextProps.cls &&
-    prevProps.color === nextProps.color
+    prevProps.color === nextProps.color &&
+    prevProps.showComment === nextProps.showComment &&
+    prevProps.comment === nextProps.comment
 )
 
 const emptyArr = []
 
 export const RegionSelectorSidebarBox = ({
+  state,
   regions = emptyArr,
   onDeleteRegion,
   onChangeRegion,
   onSelectRegion,
 }) => {
+  const [expandedIndex, setExpandedIndex] = useState()
+  const [regionsObject, setRegionsObject] = useState({})
+  const [filterType, setFilterType] = useState(0)
+  const [filteredRegionClsList, setFilteredRegionClsList] = useState(
+    state.regionClsList
+  )
   const classes = useStyles()
+
+  const getRemainingLabels = () => {
+    const { regionClsList } = state
+    const regionClsObject = {}
+
+    regionClsList.forEach((cls) => {
+      regionClsObject[cls] = false
+    })
+
+    regions.forEach((region) => {
+      if (region.cls) {
+        regionClsObject[region.cls] = true
+      }
+    })
+    setRegionsObject(regionClsObject)
+    return `(${
+      Object.values(regionClsObject).filter((region) => region).length
+    }/${Object.keys(regionClsObject).length})`
+  }
+
+  const handleChange = (panel) => (event, newExpanded) => {
+    setExpandedIndex(newExpanded ? panel : false)
+  }
+  useEffect(() => {
+    getRemainingLabels()
+    // console.log(regions)
+  }, [regions])
+
+  useEffect(() => {
+    const preventScroll = () => {
+      const selectButton = document.querySelector('button[aria-label="Select"')
+      selectButton.click()
+    }
+    preventScroll()
+  }, [])
+
+  useEffect(() => {
+    switch (filterType) {
+      case 0:
+        const allRegions = state.regionClsList
+        setFilteredRegionClsList(allRegions)
+        break
+      case 1:
+        const labeledRegions = []
+        for (const [key, value] of Object.entries(regionsObject)) {
+          if (value) {
+            labeledRegions.push(key)
+          }
+        }
+        // console.log(labeledRegions)
+        setFilteredRegionClsList(labeledRegions)
+        break
+      case 2:
+        const unlabeledRegions = []
+        for (const [key, value] of Object.entries(regionsObject)) {
+          if (!value) {
+            unlabeledRegions.push(key)
+          }
+        }
+        setFilteredRegionClsList(unlabeledRegions)
+        break
+      default:
+        break
+    }
+  }, [filterType, regionsObject])
+
   return (
     <ThemeProvider theme={theme}>
-      <SidebarBoxContainer
-        title="Regions"
+      <SidebarBox
+        info={
+          <LabelFilterMenu
+            filterType={filterType}
+            setFilterType={setFilterType}
+          />
+        }
+        title={`Labels (${
+          Object.values(regionsObject).filter((region) => region).length
+        }/${Object.keys(regionsObject).length})`}
         subTitle=""
         icon={<RegionIcon style={{ color: grey[700] }} />}
-        // expandedByDefault
+        expandedByDefault={true}
       >
         <div className={classes.container}>
-          <MemoRowHeader />
-          <HeaderSep />
-          {regions.map((r, i) => (
-            <MemoRow
-              key={r.id}
-              {...r}
-              region={r}
-              index={i}
-              onSelectRegion={onSelectRegion}
-              onDeleteRegion={onDeleteRegion}
-              onChangeRegion={onChangeRegion}
-            />
+          {/* <MemoRowHeader /> */}
+          {/* <HeaderSep /> */}
+
+          {filteredRegionClsList.map((r, i) => (
+            <Accordion key={i} disabled={!regionsObject[r]}>
+              <AccordionSummary>
+                <LabelIcon
+                  fontSize="small"
+                  sx={{
+                    color: regions.find((region) => region.cls === r)?.color,
+                  }}
+                />
+                <span
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    fontSize: "14px",
+                  }}
+                >
+                  {r}
+                </span>
+              </AccordionSummary>
+              <AccordionDetails>
+                {regions
+                  .filter((region) => region.cls === r)
+                  .map((region, i) => (
+                    <MemoRow
+                      key={region.id}
+                      {...region}
+                      region={region}
+                      index={i}
+                      onSelectRegion={onSelectRegion}
+                      onDeleteRegion={onDeleteRegion}
+                      onChangeRegion={onChangeRegion}
+                      regionClsList={state.regionClsList}
+                      allowComments={state.allowComments}
+                    />
+                  ))}
+              </AccordionDetails>
+            </Accordion>
           ))}
         </div>
-      </SidebarBoxContainer>
+      </SidebarBox>
     </ThemeProvider>
   )
 }
+
+const Accordion = styled((props) => (
+  <MuiAccordion disableGutters square {...props} />
+))(({ theme }) => ({
+  borderTop: `1px solid #a8a8a8`,
+  // borderBottom: "none",
+  // borderRight: "none",
+  // borderLeft: "none",
+  // borderBottom: `1px solid #a8a8a8`,
+  // "&:last-child": {
+  //   borderTop: 0,
+  // },
+  "&:before": {
+    display: "none",
+  },
+}))
+
+const AccordionSummary = styled((props) => (
+  <MuiAccordionSummary
+    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: "0.9rem" }} />}
+    {...props}
+  />
+))(({ theme }) => ({
+  flexDirection: "row-reverse",
+  "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
+    transform: "rotate(90deg)",
+  },
+  margin: 0,
+  "& .MuiAccordionSummary-content": {
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    margin: 0,
+  },
+  "& .MuiAccordionSummary-content.Mui-expanded": {
+    margin: 0,
+  },
+}))
+
+const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
+  borderTop: "1px solid rgba(0, 0, 0, .125)",
+  padding: 0,
+}))
 
 const mapUsedRegionProperties = (r) => [
   r.id,
@@ -206,6 +456,8 @@ const mapUsedRegionProperties = (r) => [
   r.locked,
   r.visible,
   r.highlighted,
+  r.showComment,
+  r.comment,
 ]
 
 export default memo(RegionSelectorSidebarBox, (prevProps, nextProps) =>

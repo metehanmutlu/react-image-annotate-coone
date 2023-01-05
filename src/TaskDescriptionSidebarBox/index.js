@@ -46,10 +46,6 @@ export const TaskDescriptionSidebarBox = ({ description, state, dispatch }) => {
     }
   }, [selectedImage])
 
-  useEffect(() => {
-    // console.log(hasDescription)
-  }, [hasDescription])
-
   return (
     <ThemeProvider theme={theme}>
       <SidebarBoxContainer

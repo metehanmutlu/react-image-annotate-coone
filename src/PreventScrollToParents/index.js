@@ -37,7 +37,7 @@ export const PreventScrollToParents = ({ children, ...otherProps }) => {
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
       >
-        <RemoveScroll enabled={mouseOver} removeScrollBar={false}>
+        <RemoveScroll enabled={mouseOver} removeScrollBar={true}>
           {children}
         </RemoveScroll>
       </Container>
