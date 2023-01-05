@@ -23,13 +23,21 @@ import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp"
 import LabelIcon from "@mui/icons-material/Label"
 import CommentIcon from "@mui/icons-material/Comment"
 import DisabledCommentIcon from "@mui/icons-material/CommentsDisabled"
+import FileIcon from "@mui/icons-material/InsertDriveFile"
+import LaunchIcon from "@mui/icons-material/Launch"
 import MuiAccordion from "@mui/material/Accordion"
 import MuiAccordionSummary from "@mui/material/AccordionSummary"
 import MuiAccordionDetails from "@mui/material/AccordionDetails"
 import { colors } from "../colors"
 import { useEffect } from "react"
 import SidebarBox from "../SidebarBox"
-import { Autocomplete, Box, TextField, Tooltip } from "@mui/material"
+import {
+  Autocomplete,
+  Box,
+  IconButton,
+  TextField,
+  Tooltip,
+} from "@mui/material"
 import Select from "react-select"
 import { asMutable } from "seamless-immutable"
 
@@ -79,6 +87,9 @@ const RowLayout = ({
       onMouseEnter={() => changeMouseOver(true)}
       onMouseLeave={() => changeMouseOver(false)}
       className={classnames(classes.row, { header, highlighted })}
+      style={{
+        paddingLeft: "10px",
+      }}
     >
       <Grid container alignItems="center">
         <Grid item xs={2}>
@@ -173,8 +184,6 @@ const Row = ({
   comment,
   allowComments,
 }) => {
-  // console.log(r)
-
   return (
     <RowLayout
       allowComments={allowComments}
@@ -207,9 +216,10 @@ const Row = ({
             <CommentIcon
               onClick={() => {
                 setTimeout(() => {
-                  document
-                    .querySelector('textarea[placeholder="Description..."]')
-                    .focus()
+                  const textArea = document.querySelector(
+                    'textarea[placeholder="Description..."]'
+                  )
+                  textArea && textArea.click()
                 }, 200)
               }}
               className="icon3"
@@ -265,6 +275,7 @@ const emptyArr = []
 
 export const RegionSelectorSidebarBox = ({
   state,
+  dispatch,
   regions = emptyArr,
   onDeleteRegion,
   onChangeRegion,
@@ -286,23 +297,33 @@ export const RegionSelectorSidebarBox = ({
       regionClsObject[cls] = false
     })
 
-    regions.forEach((region) => {
-      if (region.cls) {
-        regionClsObject[region.cls] = true
+    state.images.forEach((img) => {
+      if (img.regions) {
+        img.regions.forEach((region) => {
+          if (region.cls) {
+            regionClsObject[region.cls] = true
+          }
+        })
       }
     })
+
     setRegionsObject(regionClsObject)
     return `(${
       Object.values(regionClsObject).filter((region) => region).length
     }/${Object.keys(regionClsObject).length})`
   }
 
-  const handleChange = (panel) => (event, newExpanded) => {
-    setExpandedIndex(newExpanded ? panel : false)
+  const getRegionColorByCls = (cls) => {
+    const { regionClsList } = state
+    const index = regionClsList.findIndex((regionCls) => regionCls === cls)
+    return colors[index]
   }
+
+  const getSubString = (text, max) =>
+    text.length > max ? text.slice(0, max) + "..." : text
+
   useEffect(() => {
     getRemainingLabels()
-    // console.log(regions)
   }, [regions])
 
   useEffect(() => {
@@ -326,7 +347,6 @@ export const RegionSelectorSidebarBox = ({
             labeledRegions.push(key)
           }
         }
-        // console.log(labeledRegions)
         setFilteredRegionClsList(labeledRegions)
         break
       case 2:
@@ -360,16 +380,13 @@ export const RegionSelectorSidebarBox = ({
         expandedByDefault={true}
       >
         <div className={classes.container}>
-          {/* <MemoRowHeader /> */}
-          {/* <HeaderSep /> */}
-
           {filteredRegionClsList.map((r, i) => (
             <Accordion key={i} disabled={!regionsObject[r]}>
               <AccordionSummary>
                 <LabelIcon
                   fontSize="small"
                   sx={{
-                    color: regions.find((region) => region.cls === r)?.color,
+                    color: getRegionColorByCls(r),
                   }}
                 />
                 <span
@@ -383,21 +400,88 @@ export const RegionSelectorSidebarBox = ({
                 </span>
               </AccordionSummary>
               <AccordionDetails>
-                {regions
-                  .filter((region) => region.cls === r)
-                  .map((region, i) => (
-                    <MemoRow
-                      key={region.id}
-                      {...region}
-                      region={region}
-                      index={i}
-                      onSelectRegion={onSelectRegion}
-                      onDeleteRegion={onDeleteRegion}
-                      onChangeRegion={onChangeRegion}
-                      regionClsList={state.regionClsList}
-                      allowComments={state.allowComments}
-                    />
-                  ))}
+                {state.images.map((img, i) => {
+                  if (img.regions) {
+                    if (img.regions.find((region) => region.cls === r)) {
+                      return (
+                        <Accordion
+                          key={i}
+                          sx={{
+                            "& .MuiAccordionSummary-root": {
+                              p: 0,
+                              pl: "30px",
+                              minHeight: "40px",
+                            },
+                          }}
+                        >
+                          <AccordionSummary>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "6px",
+                                width: "100%",
+                              }}
+                            >
+                              <FileIcon
+                                fontSize="small"
+                                sx={{ color: "#757575" }}
+                              />
+                              <span
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  fontSize: "12px",
+                                }}
+                              >
+                                {getSubString(img.name, 18)}
+                              </span>
+                              {state.selectedImage !==
+                                state.images.findIndex(
+                                  (i) => i.name === img.name
+                                ) && (
+                                <Tooltip title="Go to image">
+                                  <IconButton
+                                    onClick={() => {
+                                      const imageIndex = state.images.findIndex(
+                                        (i) => i.name === img.name
+                                      )
+                                      dispatch({
+                                        type: "SELECT_IMAGE",
+                                        imageIndex: imageIndex,
+                                        image: state.images[imageIndex],
+                                      })
+                                    }}
+                                    sx={{ ml: "auto", mr: "18px" }}
+                                  >
+                                    <LaunchIcon fontSize="small" sx={{}} />
+                                  </IconButton>
+                                </Tooltip>
+                              )}
+                            </Box>
+                          </AccordionSummary>
+                          <AccordionDetails>
+                            {img.regions
+                              .filter((region) => region.cls === r)
+                              .map((region, i) => (
+                                <MemoRow
+                                  key={region.id}
+                                  {...region}
+                                  region={region}
+                                  index={i}
+                                  onSelectRegion={onSelectRegion}
+                                  onDeleteRegion={onDeleteRegion}
+                                  onChangeRegion={onChangeRegion}
+                                  regionClsList={state.regionClsList}
+                                  allowComments={state.allowComments}
+                                />
+                              ))}
+                          </AccordionDetails>
+                        </Accordion>
+                      )
+                    }
+                  }
+                })}
               </AccordionDetails>
             </Accordion>
           ))}
@@ -411,15 +495,11 @@ const Accordion = styled((props) => (
   <MuiAccordion disableGutters square {...props} />
 ))(({ theme }) => ({
   borderTop: `1px solid #a8a8a8`,
-  // borderBottom: "none",
-  // borderRight: "none",
-  // borderLeft: "none",
-  // borderBottom: `1px solid #a8a8a8`,
-  // "&:last-child": {
-  //   borderTop: 0,
-  // },
   "&:before": {
     display: "none",
+  },
+  "& .MuiCollapse-vertical": {
+    overflow: "hidden",
   },
 }))
 

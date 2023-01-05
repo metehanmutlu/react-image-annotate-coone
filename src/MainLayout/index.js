@@ -397,6 +397,7 @@ export const MainLayout = ({
             // ),
             <RegionSelector
               state={state}
+              dispatch={dispatchToReducer}
               regions={activeImage ? activeImage.regions : emptyArr}
               onSelectRegion={action("SELECT_REGION", "region")}
               onDeleteRegion={action("DELETE_REGION", "region")}
