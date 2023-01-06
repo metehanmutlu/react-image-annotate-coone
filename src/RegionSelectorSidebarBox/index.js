@@ -442,7 +442,8 @@ export const RegionSelectorSidebarBox = ({
                                 ) && (
                                 <Tooltip title="Go to image">
                                   <IconButton
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                      e.stopPropagation()
                                       const imageIndex = state.images.findIndex(
                                         (i) => i.name === img.name
                                       )

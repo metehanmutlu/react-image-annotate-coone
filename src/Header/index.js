@@ -47,6 +47,7 @@ const Header = ({
   return (
     <>
       <Box
+        id="headerBar"
         sx={{
           borderBottom: "1px solid #a8a8a8",
           display: "flex",
