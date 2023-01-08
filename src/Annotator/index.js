@@ -90,6 +90,7 @@ export const Annotator = ({
   videoName,
   onExit,
   onUploadImage,
+  headerButtons,
   onNextImage,
   onPrevImage,
   keypointDefinitions,
@@ -247,6 +248,7 @@ export const Annotator = ({
               hideSave={hideSave}
               onExit={onExit}
               onUploadImage={onUploadImage}
+              headerButtons={headerButtons}
             />
           </Box>
         </FullScreen>

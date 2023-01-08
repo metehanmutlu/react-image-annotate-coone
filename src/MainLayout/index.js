@@ -84,6 +84,7 @@ export const MainLayout = ({
   hideSave = false,
   onExit,
   onUploadImage,
+  headerButtons,
   fullScreenHandle,
 }: Props) => {
   const classes = useStyles()
@@ -257,6 +258,7 @@ export const MainLayout = ({
           fullScreenHandle={fullScreenHandle}
           onUploadImage={onUploadImage}
           hideFullScreen={hideFullScreen}
+          headerButtons={headerButtons}
         />
         <Workspace
           allowFullscreen

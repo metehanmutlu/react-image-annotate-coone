@@ -25,9 +25,14 @@ const Header = ({
   fullScreenHandle,
   onUploadImage,
   hideFullScreen,
+  headerButtons,
 }) => {
   const menuItems = [
-    { icon: UploadIcon, label: "Upload Image" },
+    {
+      icon: UploadIcon,
+      label: "Upload Image",
+      disabled: !onUploadImage ? true : false,
+    },
     { icon: PdfIcon, label: "Show as PDF", disabled: true },
   ]
 
@@ -138,33 +143,41 @@ const Header = ({
           {state.images[state.selectedImage]?.name}
         </Box>
 
-        {!hideFullScreen && (
-          <Tooltip title={state.fullScreen ? "Window" : "Fullscreen"}>
-            <IconButton
-              sx={{
-                ml: "auto",
-                mr: "10px",
-              }}
-              onClick={() => {
-                if (state.fullScreen) {
-                  fullScreenHandle.exit()
-                  dispatch({
-                    type: "HEADER_BUTTON_CLICKED",
-                    buttonName: "window",
-                  })
-                } else {
-                  fullScreenHandle.enter()
-                  dispatch({
-                    type: "HEADER_BUTTON_CLICKED",
-                    buttonName: "fullscreen",
-                  })
-                }
-              }}
-            >
-              {state.fullScreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
-            </IconButton>
-          </Tooltip>
-        )}
+        <Box
+          sx={{
+            ml: "auto",
+            mr: "10px",
+            display: "flex",
+            gap: "6px",
+          }}
+        >
+          {!hideFullScreen && (
+            <Tooltip title={state.fullScreen ? "Window" : "Fullscreen"}>
+              <IconButton
+                onClick={() => {
+                  if (state.fullScreen) {
+                    fullScreenHandle.exit()
+                    dispatch({
+                      type: "HEADER_BUTTON_CLICKED",
+                      buttonName: "window",
+                    })
+                  } else {
+                    fullScreenHandle.enter()
+                    dispatch({
+                      type: "HEADER_BUTTON_CLICKED",
+                      buttonName: "fullscreen",
+                    })
+                  }
+                }}
+              >
+                {state.fullScreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+              </IconButton>
+            </Tooltip>
+          )}
+
+          {headerButtons &&
+            headerButtons.map((Button, i) => <div key={i}>{Button}</div>)}
+        </Box>
       </Box>
 
       <Box

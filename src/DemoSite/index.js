@@ -4,7 +4,8 @@ import ReactDOM from "react-dom"
 import Editor, { examples } from "./Editor"
 import Annotator from "../Annotator"
 import ErrorBoundaryDialog from "./ErrorBoundaryDialog.js"
-import { Box } from "@mui/material"
+import { Box, IconButton } from "@mui/material"
+import AcUnitIcon from "@mui/icons-material/AcUnit"
 
 export default () => {
   const [annotatorOpen, changeAnnotatorOpen] = useState(false)
@@ -31,6 +32,14 @@ export default () => {
               onUploadImage={() => {
                 console.log("Image Upload Clicked")
               }}
+              // headerButtons={[
+              //   <IconButton>
+              //     <AcUnitIcon />
+              //   </IconButton>,
+              //   <IconButton>
+              //     <AcUnitIcon />
+              //   </IconButton>,
+              // ]}
             />
           </Box>
         </ErrorBoundaryDialog>
