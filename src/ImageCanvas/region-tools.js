@@ -111,6 +111,17 @@ export const getEnclosingBox = (region: Region) => {
       box.h = Math.max(...region.points.map(([x, y]) => y)) - box.y
       return box
     }
+    case "polyline": {
+      const box = {
+        x: Math.min(...region.points.map(([x, y]) => x)),
+        y: Math.min(...region.points.map(([x, y]) => y)),
+        w: 0,
+        h: 0,
+      }
+      box.w = Math.max(...region.points.map(([x, y]) => x)) - box.x
+      box.h = Math.max(...region.points.map(([x, y]) => y)) - box.y
+      return box
+    }
     case "keypoints": {
       const minX = Math.min(
         ...Object.values(region.points).map(({ x, y }) => x)

@@ -51,11 +51,12 @@ export const RegionSelectAndTransformBox = memo(
   }) => {
     const pbox = projectRegionBox(r)
     const { iw, ih } = layoutParams.current
+
     return (
       <ThemeProvider theme={theme}>
         <Fragment>
           {/* <PreventScrollToParents> */}
-          {showHighlightBox && r.type !== "polygon" && (
+          {showHighlightBox && !["polygon", "polyline"].includes(r.type) && (
             <HighlightBox
               region={r}
               mouseEvents={mouseEvents}
@@ -124,6 +125,32 @@ export const RegionSelectAndTransformBox = memo(
                     zIndex: 10,
                     pointerEvents:
                       r.open && i === r.points.length - 1 ? "none" : undefined,
+                    left: proj.x - 4,
+                    top: proj.y - 4,
+                  }}
+                />
+              )
+            })}
+          {r.type === "polyline" &&
+            !dragWithPrimary &&
+            !zoomWithPrimary &&
+            !r.locked &&
+            r.highlighted &&
+            r.points.map(([px, py], i) => {
+              const proj = mat
+                .clone()
+                .inverse()
+                .applyToPoint(px * iw, py * ih)
+              return (
+                <TransformGrabber
+                  key={i}
+                  {...mouseEvents}
+                  onMouseDown={(e) => {
+                    mouseEvents.onMouseDown(e)
+                  }}
+                  style={{
+                    cursor: "crosshair",
+                    zIndex: 10,
                     left: proj.x - 4,
                     top: proj.y - 4,
                   }}

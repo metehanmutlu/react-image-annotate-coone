@@ -15,6 +15,7 @@ import UndoIcon from "@mui/icons-material/Undo"
 import FullscreenIcon from "@mui/icons-material/Fullscreen"
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit"
 import CloudIcon from "@mui/icons-material/CloudOutlined"
+import InfoIcon from "@mui/icons-material/Info"
 
 const Header = ({
   history,
@@ -129,6 +130,27 @@ const Header = ({
             <UndoIcon />
           </IconButton>
         </Tooltip>
+
+        {state.mode && state.mode.mode === "DRAW_POLYLINE" && (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontSize: "14px",
+              fontWeight: "bold",
+              // border: "1px solid #a8a8a8",
+              borderRadius: "6px",
+              bgcolor: "#fff",
+              // p: "4px",
+              // my: "4px",
+              // boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+            }}
+          >
+            <InfoIcon sx={{ color: "orange" }} />
+            Press 'X' to complete the polyline
+          </Box>
+        )}
 
         <Box
           sx={{

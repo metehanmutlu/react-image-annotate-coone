@@ -42,7 +42,7 @@ export const RegionTags = ({
         region.editingLabels && !region.locked ? 170 : region.tags ? 60 : 50
       const displayOnTop = pbox.y > labelBoxHeight
 
-      const coords = displayOnTop
+      let coords = displayOnTop
         ? {
             left: pbox.x,
             top: pbox.y - margin / 2,

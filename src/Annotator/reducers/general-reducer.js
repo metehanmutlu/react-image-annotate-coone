@@ -195,6 +195,7 @@ export default (state: MainLayoutState, action: Action) => {
       }
     }
     case "BEGIN_MOVE_POLYGON_POINT": {
+      // console.log("finish polygon")
       const { polygon, pointIndex } = action
       state = closeEditors(state)
       if (
@@ -220,6 +221,30 @@ export default (state: MainLayoutState, action: Action) => {
         pointIndex,
       })
     }
+    case "FINISH_POLYLINE": {
+      // console.log(state)
+      const selectedRegions = state.images[state.selectedImage].regions
+      if (
+        state.mode &&
+        state.mode.mode === "DRAW_POLYLINE" &&
+        state.selectedTool === "create-polyline"
+      ) {
+        if (selectedRegions) {
+          const polyline = selectedRegions.find((r) => r.highlighted)
+          if (polyline) {
+            return setIn(
+              modifyRegion(polyline, {
+                points: polyline.points.slice(0, -1),
+                editingLabels: state.selectedCls ? false : true,
+              }),
+              ["mode"],
+              null
+            )
+          }
+        }
+      }
+      break
+    }
     case "BEGIN_MOVE_KEYPOINT": {
       const { region, keypointId } = action
       state = closeEditors(state)
@@ -231,6 +256,7 @@ export default (state: MainLayoutState, action: Action) => {
       })
     }
     case "ADD_POLYGON_POINT": {
+      // console.log("as")
       const { polygon, point, pointIndex } = action
       const regionIndex = getRegionIndex(polygon)
       if (regionIndex === null) return state
@@ -367,6 +393,23 @@ export default (state: MainLayoutState, action: Action) => {
           })
         }
         case "DRAW_POLYGON": {
+          // console.log("line moving")
+          const { regionId } = state.mode
+          const [region, regionIndex] = getRegion(regionId)
+          if (!region) return setIn(state, ["mode"], null)
+          return setIn(
+            state,
+            [
+              ...pathToActiveImage,
+              "regions",
+              regionIndex,
+              "points",
+              (region: any).points.length - 1,
+            ],
+            [x, y]
+          )
+        }
+        case "DRAW_POLYLINE": {
           const { regionId } = state.mode
           const [region, regionIndex] = getRegion(regionId)
           if (!region) return setIn(state, ["mode"], null)
@@ -452,10 +495,19 @@ export default (state: MainLayoutState, action: Action) => {
       const { x, y } = action
 
       state = setIn(state, ["mouseDownAt"], { x, y })
-
       if (state.mode) {
         switch (state.mode.mode) {
           case "DRAW_POLYGON": {
+            // console.log("draw line")
+            const [polygon, regionIndex] = getRegion(state.mode.regionId)
+            if (!polygon) break
+            return setIn(
+              state,
+              [...pathToActiveImage, "regions", regionIndex],
+              { ...polygon, points: polygon.points.concat([[x, y]]) }
+            )
+          }
+          case "DRAW_POLYLINE": {
             const [polygon, regionIndex] = getRegion(state.mode.regionId)
             if (!polygon) break
             return setIn(
@@ -575,6 +627,7 @@ export default (state: MainLayoutState, action: Action) => {
           break
         }
         case "create-polygon": {
+          // console.log("create first polygon point")
           if (state.mode && state.mode.mode === "DRAW_POLYGON") break
           state = saveToHistory(state, "Create Polygon")
           newRegion = {
@@ -591,6 +644,26 @@ export default (state: MainLayoutState, action: Action) => {
           }
           state = setIn(state, ["mode"], {
             mode: "DRAW_POLYGON",
+            regionId: newRegion.id,
+          })
+          break
+        }
+        case "create-polyline": {
+          if (state.mode && state.mode.mode === "DRAW_POLYLINE") break
+          state = saveToHistory(state, "Create Polyline")
+          newRegion = {
+            type: "polyline",
+            points: [
+              [x, y],
+              [x, y],
+            ],
+            highlighted: true,
+            color: defaultRegionColor,
+            cls: defaultRegionCls,
+            id: getRandomId(),
+          }
+          state = setIn(state, ["mode"], {
+            mode: "DRAW_POLYLINE",
             regionId: newRegion.id,
           })
           break
@@ -704,6 +777,7 @@ export default (state: MainLayoutState, action: Action) => {
         case "MOVE_REGION":
         case "RESIZE_KEYPOINTS":
         case "MOVE_POLYGON_POINT": {
+          // console.log("sa")
           return { ...state, mode: null }
         }
         case "MOVE_KEYPOINT": {
@@ -876,6 +950,10 @@ export default (state: MainLayoutState, action: Action) => {
           case "DRAW_EXPANDING_LINE":
           case "SET_EXPANDING_LINE_WIDTH":
           case "DRAW_POLYGON": {
+            const { regionId } = mode
+            return modifyRegion(regionId, null)
+          }
+          case "DRAW_POLYLINE": {
             const { regionId } = mode
             return modifyRegion(regionId, null)
           }

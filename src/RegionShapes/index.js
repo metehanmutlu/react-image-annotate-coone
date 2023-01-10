@@ -59,6 +59,21 @@ const RegionComponents = {
       />
     )
   }),
+  polyline: memo(({ region, iw, ih, fullSegmentationMode }) => {
+    const alphaBase = fullSegmentationMode ? 0.5 : 1
+    return (
+      <polyline
+        points={region.points
+          .map(([x, y]) => [x * iw, y * ih])
+          .map((a) => a.join(" "))
+          .join(" ")}
+        strokeWidth={2}
+        stroke={colorAlpha(region.color, 0.75)}
+        fill="none"
+      />
+    )
+  }),
+
   keypoints: ({ region, iw, ih, keypointDefinitions }) => {
     const { points, keypointsDefinitionId } = region
     if (!keypointDefinitions[keypointsDefinitionId]) {

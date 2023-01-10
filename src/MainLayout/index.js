@@ -33,6 +33,7 @@ import { useSettings } from "../SettingsProvider"
 import { withHotKeys } from "react-hotkeys"
 import { Box } from "@mui/material"
 import Header from "../Header"
+import PolylineIcon from "@mui/icons-material/Polyline"
 
 // import Fullscreen from "../Fullscreen"
 
@@ -116,9 +117,25 @@ export const MainLayout = ({
     nextImage = state.images[currentImageIndex + 1]
   }
 
-  useKey(() => dispatch({ type: "CANCEL" }), {
-    detectKeys: [27],
-  })
+  useKey(
+    (key) => {
+      switch (key) {
+        case 27:
+          dispatch({ type: "CANCEL" })
+          break
+        case 120:
+        case 88:
+          dispatchToReducer({
+            type: "FINISH_POLYLINE",
+          })
+        default:
+          break
+      }
+    },
+    {
+      detectKeys: [27, 120, 88],
+    }
+  )
 
   const isAVideoFrame = activeImage && activeImage.frameTime !== undefined
   const innerContainerRef = useRef()
@@ -156,6 +173,7 @@ export const MainLayout = ({
           ? activeImage.regions || []
           : impliedVideoRegions
       }
+      dispatch={dispatchToReducer}
       realSize={activeImage ? activeImage.realSize : undefined}
       videoPlaying={state.videoPlaying}
       imageSrc={state.annotationType === "image" ? activeImage.src : null}
@@ -337,6 +355,11 @@ export const MainLayout = ({
             {
               name: "create-polygon",
               helperText: "Add Polygon" + getHotkeyHelpText("create_polygon"),
+            },
+            {
+              name: "create-polyline",
+              helperText: "Add Polyline",
+              icon: <PolylineIcon />,
             },
             {
               name: "create-line",
