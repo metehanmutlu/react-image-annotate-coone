@@ -118,7 +118,7 @@ export const MainLayout = ({
   }
 
   useKey(
-    (key) => {
+    (key, event) => {
       switch (key) {
         case 27:
           dispatch({ type: "CANCEL" })
@@ -128,12 +128,18 @@ export const MainLayout = ({
           dispatchToReducer({
             type: "FINISH_POLYLINE",
           })
+        case 90:
+        case 122:
+          event.ctrlKey &&
+            [90, 122].includes(key) &&
+            action("RESTORE_HISTORY")()
         default:
+          // console.log(key)
           break
       }
     },
     {
-      detectKeys: [27, 120, 88],
+      detectKeys: [27, 120, 88, 90, 122],
     }
   )
 
